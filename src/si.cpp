@@ -38,3 +38,9 @@ struct FamilyMember {
     FamilyMember() : left(nullptr), right(nullptr), father(nullptr), contributors(nullptr) {}
 };
 
+class FamilyTree {
+private:
+    FamilyMember* root;
+    FamilyMember* current_chief;
+    
+    
