@@ -1,0 +1,7 @@
+id,name,last_name,gender,age,id_father,is_dead,was_chief,is_chief
+1,Takeshi,Tokugawa,H,75,0,0,1,1
+2,Haruto,Tokugawa,H,50,1,0,0,0
+3,Akemi,Tokugawa,M,48,1,0,0,0
+4,Kenji,Tokugawa,H,25,2,0,0,0
+5,Mariko,Tokugawa,M,22,2,0,0,0
+6,Hiroshi,Tokugawa,H,20,3,0,0,0
