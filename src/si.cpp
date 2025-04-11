@@ -351,3 +351,213 @@ public:
 
             FamilyMember* newMember = createMember(id, name, last_name, gender, age, 
                                                  id_father, is_dead, was_chief, is_chief);
+
+
+            if (root == nullptr) {
+                root = newMember;
+            } else {
+                FamilyMember* father = findMemberById(root, id_father);
+                insertMember(father, newMember);
+            }
+            
+            
+            if (is_chief && !is_dead) {
+                current_chief = newMember;
+            }
+        }
+        
+        file.close();
+    }
+    
+    void loadContributors(string filename) {
+        ifstream file("contribuidores.csv");
+        if (!file.is_open()) {
+            cerr << "Error al abrir el archivo de contribuidores: " << filename << endl;
+            return;
+        }
+        
+        string line;
+        getline(file, line); 
+        
+        while (getline(file, line)) {
+            stringstream ss(line);
+            string token;
+            
+            int member_id, contrib_id, age, grade;
+            string name, desc;
+            
+            getline(ss, token, ',');
+            member_id = stoi(token);
+            
+            getline(ss, name, ',');
+            getline(ss, token, ',');
+            age = stoi(token);
+            
+            getline(ss, token, ',');
+            contrib_id = stoi(token);
+            
+            getline(ss, desc, ',');
+            getline(ss, token, ',');
+            grade = stoi(token);
+            
+            FamilyMember* member = findMemberById(root, member_id);
+            if (member != nullptr) {
+                Contributor* newContrib = new Contributor();
+                newContrib->name = name;
+                newContrib->age = age;
+                newContrib->id = contrib_id;
+                newContrib->contribution_desc = desc;
+                newContrib->contribution_grade = grade;
+                
+                addContributorSorted(member->contributors, newContrib);
+            }
+        }
+        
+        file.close();
+    }
+    
+    void displaySuccession() {
+        if (current_chief == nullptr) {
+            cout << "No hay lider actual." << endl;
+            return;
+        }
+        
+        cout << "Linea de sucesion actual:" << endl;
+        printSuccession(current_chief);
+    }
+    
+    void assignNewChief() {
+        if (current_chief == nullptr || !current_chief->is_dead) {
+            return;
+        }
+        
+        FamilyMember* newChief = findMaleSuccessor(current_chief);
+        
+        if (newChief == nullptr) {
+            newChief = findFemaleSuccessor(current_chief);
+        }
+        
+        if (newChief != nullptr) {
+            current_chief->is_chief = false;
+            newChief->is_chief = true;
+            newChief->was_chief = true;
+            current_chief = newChief;
+            cout << "Nuevo lider asignado: " << newChief->name << " " << newChief->last_name << endl;
+        } else {
+            cout << "No se pudo encontrar un sucesor adecuado." << endl;
+        }
+    }
+    
+    void displayChief() {
+        if (current_chief == nullptr) {
+            cout << "No hay lider actual." << endl;
+            return;
+        }
+        
+        cout << "Lider actual:" << endl;
+        cout << "ID: " << current_chief->id << endl;
+        cout << "Nombre: " << current_chief->name << " " << current_chief->last_name << endl;
+        cout << "Edad: " << current_chief->age << " años" << endl;
+        cout << "Genero: " << (current_chief->gender == 'H' ? "Hombre" : "Mujer") << endl;
+        cout << "Estado: " << (current_chief->is_dead ? "Difunto" : "Vivo") << endl;
+        
+        
+        if (current_chief->contributors != nullptr) {
+            cout << "\nContribuidores:" << endl;
+            Contributor* current = current_chief->contributors;
+            int position = 1;
+            while (current != nullptr) {
+                cout << position++ << ". " << current->name << " (ID: " << current->id 
+                     << ", Edad: " << current->age << ")" << endl;
+                cout << "   Contribucion: " << current->contribution_desc << endl;
+                cout << "   Grado: " << current->contribution_grade << "/10" << endl;
+                current = current->next;
+            }
+        } else {
+            cout << "\nNo hay contribuidores registrados." << endl;
+        }
+    }
+    
+    void checkAgeAndTransferLeadership() {
+        if (current_chief != nullptr && current_chief->age > 70 && !current_chief->is_dead) {
+            FamilyMember* successor = findMaleSuccessor(current_chief);
+            if (successor != nullptr) {
+                current_chief->is_chief = false;
+                successor->is_chief = true;
+                successor->was_chief = true;
+                current_chief = successor;
+                cout << "Liderazgo transferido por edad: " << successor->name << " " << successor->last_name << endl;
+            }
+        }
+    }
+    
+    void updateMemberData(int id) {
+        FamilyMember* member = findMemberById(root, id);
+        if (member == nullptr) {
+            cout << "Miembro no encontrado." << endl;
+            return;
+        }
+        
+        cout << "Actualizando datos de: " << member->name << " " << member->last_name << endl;
+        
+        int opcion;
+        do {
+            cout << "\nSeleccione dato a actualizar:" << endl;
+            cout << "1. Nombre" << endl;
+            cout << "2. Apellido" << endl;
+            cout << "3. Edad" << endl;
+            cout << "4. Estado de vida" << endl;
+            cout << "5. Estado de liderazgo" << endl;
+            cout << "0. Volver al menu principal" << endl;
+            cout << "Opcion: ";
+            cin >> opcion;
+            cin.ignore(); 
+            
+            switch (opcion) {
+                case 1: {
+                    cout << "Nuevo nombre: ";
+                    getline(cin, member->name);
+                    break;
+                }
+                case 2: {
+                    cout << "Nuevo apellido: ";
+                    getline(cin, member->last_name);
+                    break;
+                }
+                case 3: {
+                    cout << "Nueva edad: ";
+                    cin >> member->age;
+                    break;
+                }
+                case 4: {
+                    cout << "¿El miembro ha fallecido? (1=Sí, 0=No): ";
+                    cin >> member->is_dead;
+                    if (member->is_dead && member->is_chief) {
+                        assignNewChief();
+                    }
+                    break;
+                }
+                case 5: {
+                    cout << "¿Es ahora el líder? (1=Sí, 0=No): ";
+                    bool was_chief = member->is_chief;
+                    cin >> member->is_chief;
+                    if (member->is_chief) {
+                        member->was_chief = true;
+                        if (current_chief != nullptr && current_chief != member) {
+                            current_chief->is_chief = false;
+                        }
+                        current_chief = member;
+                    } else if (was_chief) {
+                        assignNewChief();
+                    }
+                    break;
+                }
+                case 0:
+                    break;
+                default:
+                    cout << "Opcion no valida." << endl;
+            }
+        } while (opcion != 0);
+    }
+};
+
