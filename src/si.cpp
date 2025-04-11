@@ -306,7 +306,7 @@ public:
     FamilyTree() : root(nullptr), current_chief(nullptr) {}
     
     void loadFromCSV(string filename) {
-        ifstream file("familia.csv");
+        ifstream file("bin/familia.csv");
         if (!file.is_open()) {
             cerr << "Error al abrir el archivo: " << filename << endl;
             return;
@@ -370,7 +370,7 @@ public:
     }
     
     void loadContributors(string filename) {
-        ifstream file("contribuidores.csv");
+        ifstream file("bin/contribuidores.csv");
         if (!file.is_open()) {
             cerr << "Error al abrir el archivo de contribuidores: " << filename << endl;
             return;
