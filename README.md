@@ -27,7 +27,8 @@ Detalle del problema:
 
 -Pérdida de reconocimiento a contribuidores: No hay un sistema organizado para priorizar aliados clave del clan según su importancia.
 
-*Cómo el Programa Soluciona el Problema
+Cómo el Programa Soluciona el Problema
+
 -Eficiencia en Búsqueda:
 El árbol binario permite recorridos rápidos para encontrar sucesores según las reglas establecidas.
 
