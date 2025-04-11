@@ -560,4 +560,53 @@ public:
         } while (opcion != 0);
     }
 };
+int main() {
+    FamilyTree family;
+    
+
+    family.loadFromCSV("familia.csv");
+    family.loadContributors("contribuidores.csv");
+    
+    int opcion;
+    do {
+        cout << "\nMenu del Clan del Shogun" << endl;
+        cout << "1. Mostrar linea de sucesion" << endl;
+        cout << "2. Asignar nuevo lider (si el actual murio)" << endl;
+        cout << "3. Verificar edad del lider y transferir si es necesario" << endl;
+        cout << "4. Mostrar lider actual" << endl;
+        cout << "5. Actualizar datos de un miembro" << endl;
+        cout << "0. Salir" << endl;
+        cout << "Seleccione una opcion: ";
+        cin >> opcion;
+        
+        switch (opcion) {
+            case 1:
+                family.displaySuccession();
+                break;
+            case 2:
+                family.assignNewChief();
+                break;
+            case 3:
+                family.checkAgeAndTransferLeadership();
+                break;
+            case 4:
+                family.displayChief();
+                break;
+            case 5: {
+                int id;
+                cout << "Ingrese ID del miembro a actualizar: ";
+                cin >> id;
+                family.updateMemberData(id);
+                break;
+            }
+            case 0:
+                cout << "Saliendo del sistema..." << endl;
+                break;
+            default:
+                cout << "Opcion no valida." << endl;
+        }
+    } while (opcion != 0);
+    
+    return 0;
+}
 
