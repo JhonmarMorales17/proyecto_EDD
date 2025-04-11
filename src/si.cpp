@@ -349,7 +349,5 @@ public:
             getline(ss, token, ',');
             is_chief = (token == "1");
 
-    
-
-    
-    
+            FamilyMember* newMember = createMember(id, name, last_name, gender, age, 
+                                                 id_father, is_dead, was_chief, is_chief);
